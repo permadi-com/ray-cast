@@ -659,7 +659,7 @@ GameWindow.prototype =
 		// Render next frame
 		setTimeout(function() 
 		{
-			object.animationFrameID = requestAnimationFrame(()=>object.update());
+			object.animationFrameID = requestAnimationFrame(object.update());
 		}, 1000 / this.frameRate);		
 		
 	},
@@ -667,7 +667,8 @@ GameWindow.prototype =
 	handleKeyDown : function(e) 
 	{
 
-		e = e || window.event;
+		if (!e)
+			e = window.event;
 
 		// UP keypad
 		if (e.keyCode == '38'  || String.fromCharCode(e.keyCode)=='W') 
@@ -696,7 +697,8 @@ GameWindow.prototype =
 
 	handleKeyUp : function(e) 
 	{
-		e = e || window.event;
+		if (!e)
+			e = window.event;
 
 		// UP keypad
 		if (e.keyCode == '38'  || String.fromCharCode(e.keyCode)=='W') 
@@ -725,9 +727,10 @@ GameWindow.prototype =
 	{
 
 		this.init();
-		document.onkeydown = ()=>this.handleKeyDown();
-		document.onkeyup = ()=>this.handleKeyUp();		
-		this.animationFrameID = requestAnimationFrame(()=>this.update());
+		window.addEventListener("keydown", this.handleKeyDown.bind(this), false);
+		window.addEventListener("keyup", this.handleKeyUp.bind(this), false);
+		
+		this.animationFrameID = requestAnimationFrame(this.update());
 	}
 
 }
