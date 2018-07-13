@@ -13,3 +13,10 @@ What's on it:
 * Rendering of simple (static) ground and sky
 * Movement handling
 
+## Second Demo
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/2
+
+See it in action: https://permadi.com/tutorial/raycast/demo/2/
+
+What's on it:
+* Wall texturing
