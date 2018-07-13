@@ -128,7 +128,7 @@ GameWindow.prototype =
 
 		this.fWallTexture.onload = this.onWallTextureLoaded.bind(this);
 		  
-		this.fWallTexture.src = "images/tile.jpg";		
+		this.fWallTexture.src = "images/tile2.png";		
 	},
 	
 	onWallTextureLoaded : function(image)
@@ -656,10 +656,7 @@ GameWindow.prototype =
 			var projectedWallHeight=(this.WALL_HEIGHT*this.fPlayerDistanceToTheProjectionPlane/dist);
 			bottomOfWall = this.fProjectionPlaneYCenter+(projectedWallHeight*0.5);
 			topOfWall = this.fProjectionPlaneYCenter-(projectedWallHeight*0.5);
-			if (topOfWall<0)
-				topOfWall=0;
-			if (bottomOfWall>=this.PROJECTIONPLANEHEIGHT)
-				bottomOfWall=this.PROJECTIONPLANEHEIGHT-1;
+			
 			if (DEBUG)
 			{				
 				console.log("castColumn="+castColumn+" distance="+dist);
