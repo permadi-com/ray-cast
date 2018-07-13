@@ -697,7 +697,7 @@ GameWindow.prototype =
 		// Render next frame
 		setTimeout(function() 
 		{
-			object.animationFrameID = requestAnimationFrame(object.update());
+			object.animationFrameID = requestAnimationFrame(object.update.bind(object));
 		}, 1000 / this.frameRate);		
 		
 	},
@@ -768,7 +768,7 @@ GameWindow.prototype =
 		window.addEventListener("keydown", this.handleKeyDown.bind(this), false);
 		window.addEventListener("keyup", this.handleKeyUp.bind(this), false);
 		
-		this.animationFrameID = requestAnimationFrame(this.update());
+		this.animationFrameID = requestAnimationFrame(this.update.bind(this));
 	}
 
 }
