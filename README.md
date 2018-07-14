@@ -1,7 +1,8 @@
 # Ray casting tutorial demos
+Ray casting is a popular graphic rendering techniques in the 90s, used to render semi-3D worlds in many games.  
 These repository contain demos for the ray-casting tutorials at permadi.com.  
 https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/  
-Read through the tutorial to learn ray casting.  
+Read through the tutorial to learn the concept behind ray casting.  
 
 ## First Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/1
