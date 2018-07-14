@@ -260,9 +260,8 @@ GameWindow.prototype =
 	
 
 	
-	drawWallSliceRectangleTinted: function(x, y, width, height, xOffset, brighnessLevel)
-	{
-		
+	drawWallSliceRectangleTinted: function(x, y, width, height, xOffset, brightnessLevel)
+	{		
 		//console.log("this.fWallTextureBuffer="+this.fWallTextureBuffer);
 		//var xOffset=x%this.fWallTexture.width;	// wrap the image position
 		
@@ -308,9 +307,9 @@ GameWindow.prototype =
 			yError += height;
 												 
    	
-			var red=Math.floor(this.fWallTexturePixels[sourceIndex]*brighnessLevel);
-			var green=Math.floor(this.fWallTexturePixels[sourceIndex+1]*brighnessLevel);
-			var blue=Math.floor(this.fWallTexturePixels[sourceIndex+2]*brighnessLevel);
+			var red=Math.floor(this.fWallTexturePixels[sourceIndex]*brightnessLevel);
+			var green=Math.floor(this.fWallTexturePixels[sourceIndex+1]*brightnessLevel);
+			var blue=Math.floor(this.fWallTexturePixels[sourceIndex+2]*brightnessLevel);
 			var alpha=Math.floor(this.fWallTexturePixels[sourceIndex+3]);
 			
 			// while there's a row to draw & not end of drawing area
@@ -880,16 +879,6 @@ GameWindow.prototype =
 			// Add simple shading so that farther wall slices appear darker.
 			// 850 is arbitrary value of the farthest distance.  
 			dist=Math.floor(dist);
-			var color=255-(dist/550.0)*255.0;
-			//color=255*(color/1000);
-			// don't allow it to be too dark
-			if (color<20)
-				color=20;
-			if (color>255)
-				color=255;
-			color=Math.floor(color);
-			//var cssColor=this.rgbToHexColor(color,color,color);
-			//console.log("dist="+dist+" color="+color);
 
 			// Trick to give different shades between vertical and horizontal (you could also use different textures for each if you wish to)
 			if (isVerticalHit)
@@ -959,7 +948,8 @@ GameWindow.prototype =
 		}
 		this.fPlayerX+=dx;
 		this.fPlayerY+=dy;
-		
+
+		// CHECK COLLISION AGAINST WALLS
 		// compute cell position
 		var playerXCell = Math.floor(this.fPlayerX/this.TILE_SIZE);
 		var playerYCell = Math.floor(this.fPlayerY/this.TILE_SIZE);
