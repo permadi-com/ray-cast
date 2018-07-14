@@ -2,7 +2,7 @@
 
 ## First Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/1
-See it in action: https://permadi.com/tutorial/raycast/demo/1/
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/1/
 
 What's on it:
 * Wall finding
@@ -13,21 +13,19 @@ What's on it:
 * Movement handling
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo1.png?raw=true "Demo Preview 1")
-
+___
 ## Second Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/2
-
-See it in action: https://permadi.com/tutorial/raycast/demo/2/
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/2/
 
 What's on it:
 * Wall texturing
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo2.png?raw=true "Demo Preview 2")
-
+___
 ## Third Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/3
-
-See it in action: https://permadi.com/tutorial/raycast/demo/3/
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/3/
 
 What's on it:
 * Wall texture shading
@@ -36,11 +34,10 @@ What's on it:
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo3.png?raw=true "Demo Preview 3")
 
-
+___
 ## Fourth Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/4
-
-See it in action: https://permadi.com/tutorial/raycast/demo/4/
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/4/
 
 What's on it:
 * Floor casting!
