@@ -19,7 +19,7 @@ Source: https://github.com/permadi-com/ray-cast/tree/master/demo/2
 <br>See it in action: https://permadi.com/tutorial/raycast/demo/2/
 
 What's on it:
-* Wall texturing
+* Wall texturing using JavaScript canvas copy image
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo2.png?raw=true "Demo Preview 2")
 ___
@@ -28,9 +28,11 @@ Source: https://github.com/permadi-com/ray-cast/tree/master/demo/3
 <br>See it in action: https://permadi.com/tutorial/raycast/demo/3/
 
 What's on it:
-* Wall texture shading
+* Wall texturing revamped with offscreen buffer
+* Wall texture beutification with cheap shading
+* Line drawing and image scaling with Bresenham algorithm (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
 * Offscreen drawing/double buffering
-* Collision detection (played can no longer move through walls)
+* Collision detection (player can no longer move through walls)
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo3.png?raw=true "Demo Preview 3")
 
