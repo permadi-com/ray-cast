@@ -32,7 +32,7 @@ What's on it:
 * Wall texture beutification with cheap shading
 * Line drawing and image scaling with Bresenham algorithm (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
 * Offscreen drawing/double buffering
-* Collision detection (player can no longer move through walls)
+* Collision detection (player can no longer move through walls or walk into oblivion!)
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo3.png?raw=true "Demo Preview 3")
 
