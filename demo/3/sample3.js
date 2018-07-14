@@ -1,19 +1,19 @@
 /**********************************************
 Raycasting implementation in Javascript.
-First Demo
+Third Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/3
 
 See it in action: https://permadi.com/tutorial/raycast/demo/3/
 
 What's on this demo:
-Wall finding
-Generating lookup tables
-Fishbowl / distortion corrections
-Rendering of simple (static) ground and sky
-Movement handling
-Textured wall
-Collision detection
-Double buffering
+- Generating lookup tables
+- Wall finding
+- Fishbowl / distortion corrections
+- Rendering of simple (static) ground and sky
+- Movement handling
+- Rendering textured wall
+- Collision detection
+- Double buffering / offscreen drawing
 ---------------
 
 License: MIT (https://opensource.org/licenses/MIT)
