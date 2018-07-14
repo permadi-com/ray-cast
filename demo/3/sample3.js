@@ -9,10 +9,11 @@ What's on this demo:
 Wall finding
 Generating lookup tables
 Fishbowl / distortion corrections
-Simple flat wall shading
 Rendering of simple (static) ground and sky
 Movement handling
-
+Textured wall
+Collision detection
+Double buffering
 ---------------
 
 License: MIT (https://opensource.org/licenses/MIT)
@@ -278,74 +279,22 @@ GameWindow.prototype =
 		var sourceIndex=(bytesPerPixel*xOffset);
 		var lastSourceIndex=sourceIndex+(this.fWallTextureBuffer.width*this.fWallTextureBuffer.height*bytesPerPixel);
 		
-		//var targetCanvasPixels=this.canvasContext.createImageData(0, 0, width, height);
 		var targetIndex=(this.offscreenCanvasPixels.width*bytesPerPixel)*y+(bytesPerPixel*x);
-		
-		// index of the first src byte
-		// (note that we're not going to use index for dest, instead, we'll use
-		// row and col number) for fater access
-		//BITPTR src = (BITPTR)&srcBits[(srcStartRow << TILE_X_SH_SIZE)];
-		//BITPTR lastSrc = src + TILE_X_SIZE;
 
 		var heightToDraw = height;
 		// clip bottom
 		if (y+heightToDraw>this.offscreenCanvasPixels.height)
 			heightToDraw=this.offscreenCanvasPixels.height-y;
 
-		// we cannot use "unsigned" because the dest might be out of bound if the top
-		// is negative
-		//var DestIndex = y * this.offscreenCanvasPixels.width + x;      
 
-		// clipping top in case it's negative    
-		// we can put this inside the next while loop, but put it here
-		// to avoid skipping, so that if the clipping is not needed, the running
-		// program doesn't have to do a jump (performace gain)
 		var yError=0;   
-		/*while (targetIndex<0)                  
-		{   
-			yError += height; 
-			// Chop up until even.  This will skip some part of the top part of 
-			// drawing area to be skipped.  We can avoid the skipping part (top part
-			// of the wall not being drawn), but we need to perform a test so that
-			// we will start copying at 0, that probably will cause the percent to
-			// be wrong a bit, and we'll need to do one by one increment
-			// Another way is to do a one by one test when a pixel is being drawn,
-			// to make sure the destination isn't negative destination (a lot of test)
-			// I think it will be easier if just do it like below, but we can
-			// chop the top part of the drawing area when blitting
-			//  OR, we can designate a NONZERO starting ROW (offset) number on EVERY drawing
-			//  call, that way, we won't waste time drawing an area that will be chopped
-			// anyway
-			while (yError>=this.fWallTextureBuffer.width)
-			{                  
-				yError-=this.fWallTextureBuffer.width;
-				targetIndex+=(bytesPerPixel*this.offscreenCanvasPixels.width);
-				heightToDraw--;
-			}         
-			// move to next source pixel
-			// NOTE: we need to account this when drawing so that we don't use the wrong
-			// height (compare this function width "height scale inc 2")
-			sourceIndex+=(bytesPerPixel*this.fWallTextureBuffer.width);
-			if (sourceIndex>lastSourceIndex)
-				sourceIndex=lastSourceIndex;
-		}*/
+		
 
 		// we need to check this, otherwise, program might crash when trying
 		// to fetch the shade if this condition is true (possible if height is 0)
 		if (heightToDraw<0)
 			return;
 
-		/*gCurrentDestBits = g3DWinGBits + DestIndex;
-		// get correct shade number to use based on distance                              
-		int shadeNum = GLdistShadeMap[dist];   
-		// acces palette for the current shade                            
-		BITPTR shadedPal = &GLshadeMap[shadeNum][0];*/
-
-		// we're going to draw the first row, then move down and draw the next row
-		// and so on we can use the original x destination to find out
-		// the x position of the next row 
-		// Remeber that the source bitmap is rotated, so the width is actually the
-		// height
 		while (true)
 		{                     
 			// if error < actualHeight, this will cause row to be skipped until
@@ -357,10 +306,7 @@ GameWindow.prototype =
 			// 2) Similarly, if percent is <100, we skip a pixel while incrementing
 			// and do 1) when the percentage we're adding has reached >=100
 			yError += height;
-												  
-			// dereference for faster access (especially useful when the same bit
-			// will be copied more than once)
-			//BIT srcBit = shadedPal[*src];
+												 
    	
 			var red=Math.floor(this.fWallTexturePixels[sourceIndex]*brighnessLevel);
 			var green=Math.floor(this.fWallTexturePixels[sourceIndex+1]*brighnessLevel);
