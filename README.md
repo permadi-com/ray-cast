@@ -1,4 +1,7 @@
 # Ray casting tutorial demos
+These repository contain demos for the ray-casting tutorials at permadi.com.  
+https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/  
+Read through the tutorial to lean ray casting.  
 
 ## First Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/1
@@ -11,7 +14,7 @@ What's on it:
 * Simple flat wall shading
 * Rendering of simple (static) ground and sky
 * Handling keyboard inputs
-* Moving of player
+* Moving the player
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo1.png?raw=true "Demo Preview 1")
 ___
