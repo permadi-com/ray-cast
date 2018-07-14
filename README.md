@@ -20,3 +20,13 @@ See it in action: https://permadi.com/tutorial/raycast/demo/2/
 
 What's on it:
 * Wall texturing
+
+## Third Demo
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/3
+
+See it in action: https://permadi.com/tutorial/raycast/demo/3/
+
+What's on it:
+* Wall shading
+* Offscreen drawing/double buffering
+* Collision detection (played can no longer move through walls)
