@@ -10,7 +10,8 @@ What's on it:
 * Fishbowl / distortion corrections
 * Simple flat wall shading
 * Rendering of simple (static) ground and sky
-* Movement handling
+* Handling keyboard inputs
+* Moving of player
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo1.png?raw=true "Demo Preview 1")
 ___
