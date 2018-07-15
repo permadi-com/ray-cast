@@ -73,6 +73,6 @@ Source: https://github.com/permadi-com/ray-cast/tree/master/demo/6
 <br>See it in action: https://permadi.com/tutorial/raycast/demo/6/
 
 What's on it:
-* Floor casting.
+* Ceiling casting.
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo6.png?raw=true "Demo Preview 6")
