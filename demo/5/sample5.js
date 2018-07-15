@@ -1,9 +1,9 @@
 /**********************************************
 Raycasting implementation in Javascript.
 First Demo
-Source: https://github.com/permadi-com/ray-cast/tree/master/demo/4
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/5
 
-See it in action: https://permadi.com/tutorial/raycast/demo/4/
+See it in action: https://permadi.com/tutorial/raycast/demo/5/
 
 What's on this demo:
 Wall finding
@@ -15,7 +15,8 @@ Textured wall
 Collision detection
 Double buffering
 Floor casting
-
+Background rendering
+Shading trick (simulating flickers or something :)
 ---------------
 
 License: MIT (https://opensource.org/licenses/MIT)
@@ -74,6 +75,7 @@ function GameWindow(canvas) {
 	this.ANGLE360 = Math.floor(this.ANGLE60*6);
 	this.ANGLE0 = 0;
 	this.ANGLE5 = Math.floor(this.ANGLE30/6);
+	this.ANGLE3 = Math.floor(this.ANGLE30/10);
 	this.ANGLE10 = Math.floor(this.ANGLE5*2);
 	this.ANGLE45 = Math.floor(this.ANGLE15*3);
 	
@@ -91,7 +93,7 @@ function GameWindow(canvas) {
 	// player's attributes
 	this.fPlayerX = 100;
 	this.fPlayerY = 160;
-	this.fPlayerArc = this.ANGLE5+this.ANGLE5;
+	this.fPlayerArc = this.ANGLE60;
 	this.fPlayerDistanceToTheProjectionPlane = 277;
 	this.fPlayerHeight =32;
 	this.fPlayerSpeed = 16;
@@ -119,7 +121,10 @@ function GameWindow(canvas) {
 	
 	this.fWallTextureCanvas;
 	this.fWallTexturePixels;
+	this.fBackgroundImageArc=0;
 	
+	this.baseLightValue=180;
+	this.baseLightValueDelta=1;
 } 
 
 GameWindow.prototype = 
@@ -131,7 +136,7 @@ GameWindow.prototype =
 
 		this.fWallTexture.onload = this.onWallTextureLoaded.bind(this);
 		  
-		this.fWallTexture.src = "images/tile2.png";		
+		this.fWallTexture.src = "images/brick2.png";		
 	},
 	
 	loadFloorTexture : function()
@@ -141,7 +146,17 @@ GameWindow.prototype =
 
 		this.fFloorTexture.onload = this.onFloorTextureLoaded.bind(this);
 		  
-		this.fFloorTexture.src = "images/floortile.png";		
+		this.fFloorTexture.src = "images/tile7.png";		
+	},	
+	
+	loadBackgroundTexture : function()
+	{
+		this.fBackgroundTexture= new Image();
+		this.fBackgroundTexture.crossOrigin = "Anonymous";
+
+		this.fBackgroundTexture.onload = this.onBackgroundTextureLoaded.bind(this);
+		  
+		this.fBackgroundTexture.src = "images/bgr.png";		
 	},	
 	
 	onWallTextureLoaded : function(image)
@@ -172,6 +187,19 @@ GameWindow.prototype =
 		//console.log("onWallTextureLoaded imageData="+this.fWallTexturePixels);
 	},
 	
+	onBackgroundTextureLoaded : function(image)
+	{
+		console.log("onBackgroundTextureLoaded image="+this.fBackgroundTexture+" image.width="+this.fBackgroundTexture.width);
+		// create an in-memory canvas
+		this.fBackgroundTextureBuffer = document.createElement('canvas');		
+		this.fBackgroundTextureBuffer.width = this.fBackgroundTexture.width;
+		this.fBackgroundTextureBuffer.height = this.fBackgroundTexture.height;
+		this.fBackgroundTextureBuffer.getContext('2d').drawImage(this.fBackgroundTexture, 0, 0);
+		
+		var imageData = this.fBackgroundTextureBuffer.getContext('2d').getImageData(0, 0, this.fBackgroundTextureBuffer.width, this.fBackgroundTextureBuffer.height);
+		this.fBackgroundTexturePixels = imageData.data;
+		//console.log("onWallTextureLoaded imageData="+this.fWallTexturePixels);
+	},	
 	
 	//*******************************************************************//
 	//* Convert arc (degree) to radian
@@ -289,10 +317,6 @@ GameWindow.prototype =
 	
 	drawWallSliceRectangleTinted: function(x, y, width, height, xOffset, brighnessLevel)
 	{
-		
-		//console.log("this.fWallTextureBuffer="+this.fWallTextureBuffer);
-		//var xOffset=x%this.fWallTexture.width;	// wrap the image position
-		
 		// wait until the texture loads
 		if (this.fWallTextureBuffer==undefined)
 			return;
@@ -342,11 +366,12 @@ GameWindow.prototype =
 												  
 			// dereference for faster access (especially useful when the same bit
 			// will be copied more than once)
-			//BIT srcBit = shadedPal[*src];
-   	
+
+			// Cheap shading trick by using brighnessLevel (which doesn't really have to correspond to "brigness") 
+			// to alter colors.  You can use logarithmic falloff or linear falloff to produce some interesting effect
 			var red=Math.floor(this.fWallTexturePixels[sourceIndex]*brighnessLevel);
 			var green=Math.floor(this.fWallTexturePixels[sourceIndex+1]*brighnessLevel);
-			var blue=Math.floor(this.fWallTexturePixels[sourceIndex+2]*brighnessLevel);
+			var blue=Math.floor(this.fWallTexturePixels[sourceIndex+2]);
 			var alpha=Math.floor(this.fWallTexturePixels[sourceIndex+3]);
 			
 			// while there's a row to draw & not end of drawing area
@@ -372,41 +397,37 @@ GameWindow.prototype =
 	
 	clearOffscreenCanvas : function()
 	{
-		var targetIndex=0;
-		var bytesPerPixel=4;
-		for (var y=0; y<this.offscreenCanvasPixels.height; y++)
-		{
-			//console.log("y="+y+" targetIndex="+targetIndex)
-			for (var x=0; x<this.offscreenCanvasPixels.width; x++)
-			{
-				this.offscreenCanvasPixels.data[targetIndex]=0;
-				this.offscreenCanvasPixels.data[targetIndex+1]=0;
-				this.offscreenCanvasPixels.data[targetIndex+2]=0;
-				this.offscreenCanvasPixels.data[targetIndex+3]=0;
-				targetIndex+=(bytesPerPixel);	
-			}
+		
+		var targetIndex=0;	
+		var bytesPerPixel=4;	
+		for (var y=0; y<this.offscreenCanvasPixels.height; y++)	
+		{	
+			//console.log("y="+y+" targetIndex="+targetIndex)	
+			for (var x=0; x<this.offscreenCanvasPixels.width; x++)	
+			{	
+				this.offscreenCanvasPixels.data[targetIndex]=0;	
+				this.offscreenCanvasPixels.data[targetIndex+1]=0;	
+				this.offscreenCanvasPixels.data[targetIndex+2]=0;	
+				this.offscreenCanvasPixels.data[targetIndex+3]=0;	
+				targetIndex+=(bytesPerPixel);		
+			}	
 		}			
-		this.offscreenCanvasContext.clearRect(0, 0, this.width, this.height);
+		//this.offscreenCanvasContext.clearRect(0, 0, this.width, this.height);
+		if (this.fBackgroundTextureBuffer!=undefined)
+		{
+			this.offscreenCanvasContext.drawImage(this.fBackgroundTexture,
+				0,0, 
+				this.PROJECTIONPLANEWIDTH-this.fBackgroundImageArc, this.PROJECTIONPLANEHEIGHT,
+				this.fBackgroundImageArc, 0, 
+				this.PROJECTIONPLANEWIDTH-this.fBackgroundImageArc, this.PROJECTIONPLANEHEIGHT);		
+			this.offscreenCanvasPixels=this.offscreenCanvasContext.getImageData(0,0,canvas.width, canvas.height);	
+		}
 	},
 	
+	
 	blitOffscreenCanvas : function()
-	{
-		var offscreenBgrCanvasPixels =  this.offscreenCanvasContext.getImageData(0,0,canvas.width, canvas.height);
-		this.canvasContext.putImageData(offscreenBgrCanvasPixels,0,0);
-		/*targetIndex=0;
-		var bytesPerPixel=4;
-		for (var y=0; y<this.height; y++)
-		{
-			console.log("y="+y+" targetIndex="+targetIndex)
-			for (var x=0; x<this.width; x++)
-			{
-				this.offscreenCanvasPixels.data[targetIndex]=255;
-				this.offscreenCanvasPixels.data[targetIndex+1]=255;
-				this.offscreenCanvasPixels.data[targetIndex+2]=0;
-				this.offscreenCanvasPixels.data[targetIndex+3]=255;
-				targetIndex+=(bytesPerPixel);	
-			}
-		}	*/	
+	{		
+
 		this.canvasContext.putImageData(this.offscreenCanvasPixels,0,0);
 	},
 	
@@ -433,6 +454,7 @@ GameWindow.prototype =
 	{
 		this.loadWallTexture();
 		this.loadFloorTexture();
+		this.loadBackgroundTexture();
 		var i;
 		var radian;
 		this.fSinTable = new Array(this.ANGLE360+1);
@@ -513,49 +535,32 @@ GameWindow.prototype =
 
         // CREATE A SIMPLE MAP.
 		// Use string for elegance (easier to see).  W=Wall, O=Opening
-        var map=
-			'WWWWWWWWWWWW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOWOWOOW'+
-			'WOOWOOWOWOOW'+
-			'WOOWOOWOWOOW'+
-			'WOOWOOWOWOOW'+
-			'WOOWOOWOWOOW'+
-			'WOOWOOWOWOOW'+
-			'WOOWOOWOWOOW'+ 
-			'WOOWWWWOWOOW'+
-			'WOOOOOOOOOOW'+
-			'WWWWWWWWWWWW';
-        var map2=
-			'WWWWWWWWWWWW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WOOOOOOOOOOW'+
-			'WWWWWWWWWWWW';	
+        
 		var map3=
-                'WWWWWWWWWWWW'+
-                'WOOOOOOOOOOW'+
-                'WOOOOOOOOOOW'+
-                'WOOOOOOOWOOW'+
-                'WOOWOWOOWOOW'+
-                'WOOWOWWOWOOW'+
-                'WOOWOOWOWOOW'+
-                'WOOOWOWOWOOW'+
-                'WOOOWOWOWOOW'+
-                'WOOOWWWOWOOW'+
-                'WOOOOOOOOOOW'+
-                'WWWWWWWWWWWW';	
+                'WWWWWWWWWWWWWWWWWWWW'+
+                'WOOOOOOOOOOOOOOOOOOW'+
+                'WOOWOWOWOOOWOOWWOWOW'+
+                'WOOOOOOOWOOWOOOOWWOW'+
+                'WOOWOWOOWOOWOOWWWWOW'+
+                'WOOWOWWOWOOWOOWOOWOW'+
+                'WOOWOOWOWOOWOOWOOWOW'+
+                'WOOOWOWOWOOWOOOOOWOW'+
+                'WOOOWOWOWOOWOOWOOWOW'+
+                'WOOOWWWOWOOWOOWWWWOW'+
+                'WOOOOOOOOOOOOOOOOOOW'+
+                'WOOWOWOWOOOWOOWWOWOW'+
+                'WOOOOOOOWOOWOOOOOWOW'+
+                'WOOWOWOWOOOWOOWWOWOW'+
+                'WOOOOOOOWOOWOOOOOWOW'+
+                'WOOWOWOWOOOWOOWWOWOW'+
+                'WOOOOOOOWOOOOOOOOWOW'+
+                'WOOWOWOWOOOWOOWWOWOW'+
+                'WOOOOOOOOOOWOOOOOOOW'+				
+                'WWWWWWWWWWWWWWWWWWWW';
 		// Remove spaces and tabs
         this.fMap=map3.replace(/\s+/g, '');
-		this.MAP_WIDTH=12;
-		this.MAP_HEIGHT=12; 		
+		this.MAP_WIDTH=20;
+		this.MAP_HEIGHT=20; 		
 	},
 	
 	//*******************************************************************//
@@ -602,7 +607,7 @@ GameWindow.prototype =
 	//*******************************************************************//
 	drawBackground : function()
 	{
-		
+		return;
 		// sky
 		var color=255;
 		var row;
@@ -619,6 +624,8 @@ GameWindow.prototype =
 			this.drawFillRectangle(0, row, this.PROJECTIONPLANEWIDTH,incement, color, 20,20, 255);			
 			color+=incement;
 		}
+		
+		this.fBackgroundImageArc
 	},
 
 
@@ -920,12 +927,16 @@ GameWindow.prototype =
 
 			// Trick to give different shades between vertical and horizontal (you could also use different textures for each if you wish to)
 			if (isVerticalHit)
-				this.drawWallSliceRectangleTinted(castColumn, topOfWall, 1, (bottomOfWall-topOfWall)+1, xOffset, 160/(dist));
+				this.drawWallSliceRectangleTinted(castColumn, topOfWall, 1, (bottomOfWall-topOfWall)+1, xOffset, this.baseLightValue/(dist));
 			else
-				this.drawWallSliceRectangleTinted(castColumn, topOfWall, 1, (bottomOfWall-topOfWall)+1, xOffset, 100/(dist));
+				this.drawWallSliceRectangleTinted(castColumn, topOfWall, 1, (bottomOfWall-topOfWall)+1, xOffset, (this.baseLightValue-10)/(dist));
 				
+			this.baseLightValue+=this.baseLightValueDelta;
+			if (this.baseLightValue<100 || this.baseLightValue>180)
+				this.baseLightValueDelta=-this.baseLightValueDelta;
+			
 			var bytesPerPixel=4;
-			var projectionPlaneCenterY=this.PROJECTIONPLANEHEIGHT/2;
+			var projectionPlaneCenterY=this.fProjectionPlaneYCenter;
 			var lastBottomOfWall = Math.floor(bottomOfWall);
 			
 			//*************
@@ -967,7 +978,7 @@ GameWindow.prototype =
 						var sourceIndex=(tileRow*this.fFloorTextureBuffer.width*bytesPerPixel)+(bytesPerPixel*tileColumn);
 						
 						// Cheap shading trick
-						var brighnessLevel=(200/diagonalDistance);
+						var brighnessLevel=(100/diagonalDistance);
 						var red=Math.floor(this.fFloorTexturePixels[sourceIndex]*brighnessLevel);
 						var green=Math.floor(this.fFloorTexturePixels[sourceIndex+1]*brighnessLevel);
 						var blue=Math.floor(this.fFloorTexturePixels[sourceIndex+2]*brighnessLevel);
@@ -996,28 +1007,45 @@ GameWindow.prototype =
 	// This function is called every certain interval (see this.frameRate) to handle input and render the screen
 	update : function() 
 	{
-		this.clearOffscreenCanvas();
-		
+		this.clearOffscreenCanvas();		
 		this.drawOverheadMap();
 		this.drawBackground();
 		this.raycast();
 		this.drawPlayerPOVOnOverheadMap();
 		this.blitOffscreenCanvas();
+		var playerArcDelta=0;
+		
 		//console.log("update");
 		if (this.fKeyLeft)
 		{
-			this.fPlayerArc-=this.ANGLE10;
+			this.fPlayerArc-=this.ANGLE5;
+			playerArcDelta=-this.ANGLE5;
 			if (this.fPlayerArc<this.ANGLE0)
 				this.fPlayerArc+=this.ANGLE360;
 		}
 		  // rotate right
 		else if (this.fKeyRight)
 		{
-			this.fPlayerArc+=this.ANGLE10;
+			this.fPlayerArc+=this.ANGLE5;
+			playerArcDelta=this.ANGLE5;
 			if (this.fPlayerArc>=this.ANGLE360)
 				this.fPlayerArc-=this.ANGLE360;
 		}
+		this.fBackgroundImageArc-=playerArcDelta;
+		if (this.fBackgroundTextureBuffer!=undefined)
+		{
+			//console.log("this.fPlayerArc="+this.fPlayerArc+" this.fBackgroundImageArc="+this.fBackgroundImageArc);
+			// This code wraps around the background image so that it can be drawn just one.
+			// For this to work, the first section of the image needs to be repeated on the third section (see the image used in this example)
+			if (this.fBackgroundImageArc<-this.PROJECTIONPLANEWIDTH*2)
+				this.fBackgroundImageArc=this.PROJECTIONPLANEWIDTH*2+(this.fBackgroundImageArc);
+			else if (this.fBackgroundImageArc>0)
+				this.fBackgroundImageArc=-(this.fBackgroundTexture.width-this.PROJECTIONPLANEWIDTH- (this.fBackgroundImageArc));			
 
+				
+
+
+		}		
 		//  _____     _
 		// |\ arc     |
 		// |  \       y
