@@ -1,6 +1,6 @@
 /**********************************************
 Raycasting implementation in Javascript.
-First Demo
+Foruth Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/4
 
 See it in action: https://permadi.com/tutorial/raycast/demo/4/

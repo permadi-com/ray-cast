@@ -334,42 +334,12 @@ GameWindow.prototype =
 	},	
 	
 	clearOffscreenCanvas : function()
-	{
-		var targetIndex=0;
-		var bytesPerPixel=4;
-		for (var y=0; y<this.offscreenCanvasPixels.height; y++)
-		{
-			//console.log("y="+y+" targetIndex="+targetIndex)
-			for (var x=0; x<this.offscreenCanvasPixels.width; x++)
-			{
-				this.offscreenCanvasPixels.data[targetIndex]=0;
-				this.offscreenCanvasPixels.data[targetIndex+1]=0;
-				this.offscreenCanvasPixels.data[targetIndex+2]=0;
-				this.offscreenCanvasPixels.data[targetIndex+3]=0;
-				targetIndex+=(bytesPerPixel);	
-			}
-		}			
+	{	
 		this.offscreenCanvasContext.clearRect(0, 0, this.width, this.height);
 	},
 	
 	blitOffscreenCanvas : function()
 	{
-		var offscreenBgrCanvasPixels =  this.offscreenCanvasContext.getImageData(0,0,canvas.width, canvas.height);
-		this.canvasContext.putImageData(offscreenBgrCanvasPixels,0,0);
-		/*targetIndex=0;
-		var bytesPerPixel=4;
-		for (var y=0; y<this.height; y++)
-		{
-			console.log("y="+y+" targetIndex="+targetIndex)
-			for (var x=0; x<this.width; x++)
-			{
-				this.offscreenCanvasPixels.data[targetIndex]=255;
-				this.offscreenCanvasPixels.data[targetIndex+1]=255;
-				this.offscreenCanvasPixels.data[targetIndex+2]=0;
-				this.offscreenCanvasPixels.data[targetIndex+3]=255;
-				targetIndex+=(bytesPerPixel);	
-			}
-		}	*/	
 		this.canvasContext.putImageData(this.offscreenCanvasPixels,0,0);
 	},
 	
