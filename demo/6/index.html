@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ray Casting Tutorial Demo for Developers, written in Javascript - Part 6</title>
+        <script src="sample6.js"></script>
+
+    </head>
+
+    <body>
+	<h1>Ray Casting Techniques Demo Series - Part 6</h1>
+	This is a ray casting demo, to be used as a companion to the Ray Casting Tutorial at 
+	<a href="https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/">https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/</a>
+        <p>
+		<canvas id="gameCanvas" width="600" height="200">
+            <!-- Insert fallback content here -->
+        </canvas>
+		
+	<p>
+	Sixth in a series of ray casting demos:
+	<li>Panoramic background using prerendered bitmap.	
+<p>	
+	 To move around, use the arrow keys on your keyboard or the W,A,S,D keys.	
+	<p>
+	<b>Checkout the source and other demos in the series in the <a href="https://github.com/permadi-com/ray-cast/tree/master/">Git Hub</a> repository</b>
+	
+    </body>
+
+	
+	<script>
+		var canvas = document.getElementById("gameCanvas");
+		var gameWindow=new GameWindow(canvas);
+		gameWindow.start();
+	</script>	
+</html>
