@@ -56,3 +56,13 @@ What's on it:
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo4.png?raw=true "Demo Preview 4")
 
+___
+## Fifth Demo
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/5
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/5/
+
+What's on it:
+* Panoramic seamless background.
+* Shading tricks.
+
+![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo5.png?raw=true "Demo Preview 5")
