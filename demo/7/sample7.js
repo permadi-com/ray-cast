@@ -1,9 +1,9 @@
 /**********************************************
 Raycasting implementation in Javascript.
 First Demo
-Source: https://github.com/permadi-com/ray-cast/tree/master/demo/5
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/7
 
-See it in action: https://permadi.com/tutorial/raycast/demo/5/
+See it in action: https://permadi.com/tutorial/raycast/demo/7/
 
 What's on this demo:
 Wall finding
@@ -15,8 +15,8 @@ Textured wall
 Collision detection
 Double buffering
 Floor casting
-Background rendering
-Shading trick (simulating flickers or something :)
+Ceiling Casting
+Vertical motions technique (by altering player's height and projection plane)
 ---------------
 
 License: MIT (https://opensource.org/licenses/MIT)
@@ -111,7 +111,11 @@ function GameWindow(canvas) {
 	this.fKeyDown=false;
 	this.fKeyLeft=false; 
 	this.fKeyRight=false;
-
+	this.fKeyLookUp=false;
+	this.fKeyLookDown=false;
+	this.fKeyFlyUp=false;
+	this.fKeyFlyDown=false;
+		
 	// 2 dimensional map
 	this.fMap=[];
 	this.MAP_WIDTH;
@@ -136,7 +140,7 @@ GameWindow.prototype =
 
 		this.fWallTexture.onload = this.onWallTextureLoaded.bind(this);
 		  
-		this.fWallTexture.src = "images/tile43.png";		
+		this.fWallTexture.src = "images/brick2.png";		
 	},
 	
 	loadFloorTexture : function()
@@ -146,7 +150,7 @@ GameWindow.prototype =
 
 		this.fFloorTexture.onload = this.onFloorTextureLoaded.bind(this);
 		  
-		this.fFloorTexture.src = "images/tile42.png";		
+		this.fFloorTexture.src = "images/floortile.png";		
 	},	
 	
 	loadCeilingTexture : function()
@@ -156,7 +160,7 @@ GameWindow.prototype =
 
 		this.fCeilingTexture.onload = this.onCeilingTextureLoaded.bind(this);
 		  
-		this.fCeilingTexture.src = "images/tile41.png";		
+		this.fCeilingTexture.src = "images/tile7.png";		
 	},	
 	
 	loadBackgroundTexture : function()
@@ -204,7 +208,7 @@ GameWindow.prototype =
 		this.fCeilingTextureBuffer = document.createElement('canvas');		
 		this.fCeilingTextureBuffer.width = this.fCeilingTexture.width;
 		this.fCeilingTextureBuffer.height = this.fCeilingTexture.height;
-		this.fCeilingTextureBuffer.getContext('2d').drawImage(this.fCeilingTexture, 0, 0);
+		this.fCeilingTextureBuffer.getContext('2d').drawImage(this.fFloorTexture, 0, 0);
 		
 		var imageData = this.fCeilingTextureBuffer.getContext('2d').getImageData(0, 0, this.fCeilingTextureBuffer.width, this.fCeilingTextureBuffer.height);
 		this.fCeilingTexturePixels = imageData.data;
@@ -878,12 +882,28 @@ GameWindow.prototype =
 			// if yray distance to the wall is closer, the yDistance will be shorter than
 			// the xDistance
 			var isVerticalHit=false;
+			var distortedDistance=0;
+			var bottomOfWall;
+			var topOfWall;
 			if (distToHorizontalGridBeingHit < distToVerticalGridBeingHit)
 			{
 				// the next function call (drawRayOnMap()) is not a part of raycating rendering part, 
 				// it just draws the ray on the overhead map to illustrate the raycasting process
 				this.drawRayOnOverheadMap(xIntersection, horizontalGrid);
-				dist=distToHorizontalGridBeingHit;
+				dist=distToHorizontalGridBeingHit/this.fFishTable[castColumn];
+//				dist_y /= convert_to_float(GLfishTable[GLcastColumn]);
+				distortedDistance=dist;
+				var ratio = this.fPlayerDistanceToTheProjectionPlane/dist;
+				bottomOfWall = (ratio * this.fPlayerHeight + this.fProjectionPlaneYCenter);
+				var scale = (this.fPlayerDistanceToTheProjectionPlane*this.WALL_HEIGHT/dist);	
+				topOfWall = bottomOfWall - scale;
+            /*dist_y /= convert_to_float(GLfishTable[GLcastColumn]);
+            float ratio = GLplayerDistance/dist_y;
+            bot_of_wall = (int)(ratio * GLplayerHeight + GLviewportCenter);
+            scale = (int)(GLplayerDistance*GLwallHeight/dist_y);
+            top_of_wall = bot_of_wall - scale;*/
+			
+				
 				xOffset=xIntersection%this.TILE_SIZE;
 				if (DEBUG)
 				{				
@@ -898,8 +918,14 @@ GameWindow.prototype =
 				// the next function call (drawRayOnMap()) is not a part of raycating rendering part, 
 				// it just draws the ray on the overhead map to illustrate the raycasting process
 				this.drawRayOnOverheadMap(verticalGrid, yIntersection);
-				dist=distToVerticalGridBeingHit;
+				dist=distToVerticalGridBeingHit/this.fFishTable[castColumn];
+
 				xOffset=yIntersection%this.TILE_SIZE;
+				
+				var ratio = this.fPlayerDistanceToTheProjectionPlane/dist;
+				bottomOfWall = (ratio * this.fPlayerHeight + this.fProjectionPlaneYCenter);
+				var scale = (this.fPlayerDistanceToTheProjectionPlane*this.WALL_HEIGHT/dist);	
+				topOfWall = bottomOfWall - scale;
 				
 				if (DEBUG)
 				{				
@@ -908,11 +934,11 @@ GameWindow.prototype =
 			}
 
 			// correct distance (compensate for the fishbown effect)
-			dist /= this.fFishTable[castColumn];
+			//dist /= this.fFishTable[castColumn];
 			// projected_wall_height/wall_height = fPlayerDistToProjectionPlane/dist;
-			var projectedWallHeight=(this.WALL_HEIGHT*this.fPlayerDistanceToTheProjectionPlane/dist);
-			bottomOfWall = this.fProjectionPlaneYCenter+(projectedWallHeight*0.5);
-			topOfWall = this.fProjectionPlaneYCenter-(projectedWallHeight*0.5);
+			//var projectedWallHeight=(this.WALL_HEIGHT*this.fPlayerDistanceToTheProjectionPlane/dist);
+			//bottomOfWall = this.fProjectionPlaneYCenter+(projectedWallHeight*0.5);
+			//topOfWall = this.fProjectionPlaneYCenter-(projectedWallHeight*0.5);
 
 			if (DEBUG)
 			{				
@@ -947,18 +973,21 @@ GameWindow.prototype =
 				var targetIndex=lastBottomOfWall*(this.offscreenCanvasPixels.width*bytesPerPixel)+(bytesPerPixel*castColumn);
 				for (var row=lastBottomOfWall;row<this.PROJECTIONPLANEHEIGHT;row++) 
 				{                          
-					var ratio=(this.fPlayerHeight)/(row-projectionPlaneCenterY);
+					
+					var straightDistance=(this.fPlayerHeight)/(row-projectionPlaneCenterY)*
+						this.fPlayerDistanceToTheProjectionPlane;
+					
+					var actualDistance=straightDistance*
+							(this.fFishTable[castColumn]);
 
-					var diagonalDistance=Math.floor((this.fPlayerDistanceToTheProjectionPlane*ratio)*
-						(this.fFishTable[castColumn]));
-
-					var yEnd = Math.floor(diagonalDistance * this.fSinTable[castArc]);
-					var xEnd = Math.floor(diagonalDistance * this.fCosTable[castArc]);
+					var yEnd = Math.floor(actualDistance * this.fSinTable[castArc]);
+					var xEnd = Math.floor(actualDistance * this.fCosTable[castArc]);
 		
 					// Translate relative to viewer coordinates:
 					xEnd+=this.fPlayerX;
 					yEnd+=this.fPlayerY;
 
+					
 					// Get the tile intersected by ray:
 					var cellX = Math.floor(xEnd / this.TILE_SIZE);
 					var cellY = Math.floor(yEnd / this.TILE_SIZE);
@@ -976,7 +1005,7 @@ GameWindow.prototype =
 						var sourceIndex=(tileRow*this.fFloorTextureBuffer.width*bytesPerPixel)+(bytesPerPixel*tileColumn);
 						
 						// Cheap shading trick
-						var brighnessLevel=(150/diagonalDistance);
+						var brighnessLevel=(150/(actualDistance));
 						var red=Math.floor(this.fFloorTexturePixels[sourceIndex]*brighnessLevel);
 						var green=Math.floor(this.fFloorTexturePixels[sourceIndex+1]*brighnessLevel);
 						var blue=Math.floor(this.fFloorTexturePixels[sourceIndex+2]*brighnessLevel);
@@ -994,11 +1023,11 @@ GameWindow.prototype =
 				}	
 			}
 			//*************
-			// CEILING CASTING. Most of these maths can be copied (and not repeated) from the floor calculations if you will not
-			// be implementing "looking up and down."
+			// CEILING CASTING at the simplest!  Try to find ways to optimize this, you can do it!
 			//*************
 			if (this.fCeilingTextureBuffer!=undefined)
 			{
+				//console.log("this.fCeilingTexturePixels[0]="+this.fCeilingTexturePixels[0]);
 				// find the first bit so we can just add the width to get the
 				// next row (of the same column)
 
@@ -1042,7 +1071,7 @@ GameWindow.prototype =
 						var blue=Math.floor(this.fCeilingTexturePixels[sourceIndex+2]*brighnessLevel);
 						var alpha=Math.floor(this.fCeilingTexturePixels[sourceIndex+3]);						
 						
-						// Draw the pixel   
+						// Draw the pixel 
 						this.offscreenCanvasPixels.data[targetIndex]=red;
 						this.offscreenCanvasPixels.data[targetIndex+1]=green;
 						this.offscreenCanvasPixels.data[targetIndex+2]=blue;
@@ -1185,6 +1214,35 @@ GameWindow.prototype =
 				this.fPlayerY-= (playerYCellOffset-(this.TILE_SIZE-minDistanceToWall ));
 			}
 		}    
+		
+		if (this.fKeyLookUp)
+		{
+			this.fProjectionPlaneYCenter+=15;
+		}
+		else if (this.fKeyLookDown)
+		{
+			this.fProjectionPlaneYCenter-=15;
+		}
+
+		if (this.fProjectionPlaneYCenter<-this.PROJECTIONPLANEHEIGHT*1)
+			this.fProjectionPlaneYCenter=-this.PROJECTIONPLANEHEIGHT*1;
+		else if (this.fProjectionPlaneYCenter>=this.PROJECTIONPLANEHEIGHT*1.5)
+			this.fProjectionPlaneYCenter=this.PROJECTIONPLANEHEIGHT*1.5-1;
+			
+		if (this.fKeyFlyUp)
+		{
+			this.fPlayerHeight+=1;
+		}
+		else if (this.fKeyFlyDown)
+		{
+			this.fPlayerHeight-=1;
+		}
+
+		if (this.fPlayerHeight<-5)
+			this.fPlayerHeight=-5;
+		else if (this.fPlayerHeight>this.WALL_HEIGHT-5)
+			this.fPlayerHeight=this.WALL_HEIGHT-5;
+		
 		var object=this;
 		
 		// Render next frame
@@ -1222,6 +1280,28 @@ GameWindow.prototype =
 		{
 		   this.fKeyRight=true;
 		}
+		
+		// LOOK UP
+		else if (String.fromCharCode(e.keyCode)=='Q') 
+		{
+		   this.fKeyLookUp=true;
+		}
+		// LOOK DOWN
+		else if (String.fromCharCode(e.keyCode)=='Z') 
+		{
+		   this.fKeyLookDown=true;
+		}
+		// FLY UP
+		else if (String.fromCharCode(e.keyCode)=='E') 
+		{
+		   this.fKeyFlyUp=true;
+		}
+		// FLY DOWN
+		else if (String.fromCharCode(e.keyCode)=='C') 
+		{
+		   this.fKeyFlyDown=true;
+		}			
+		
 
 	},
   
@@ -1252,6 +1332,26 @@ GameWindow.prototype =
 		{
 		   this.fKeyRight=false;
 		}
+		// LOOK UP
+		else if (String.fromCharCode(e.keyCode)=='Q') 
+		{
+		   this.fKeyLookUp=false;
+		}
+		// LOOK DOWN
+		else if (String.fromCharCode(e.keyCode)=='Z') 
+		{
+		   this.fKeyLookDown=false;
+		}	
+		// FLY UP
+		else if (String.fromCharCode(e.keyCode)=='E') 
+		{
+		   this.fKeyFlyUp=false;
+		}
+		// FLY DOWN
+		else if (String.fromCharCode(e.keyCode)=='C') 
+		{
+		   this.fKeyFlyDown=false;
+		}			
 	},
 	
 	start : function()
