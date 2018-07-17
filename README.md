@@ -76,3 +76,14 @@ What's on it:
 * Ceiling casting.
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo6.png?raw=true "Demo Preview 6")
+
+
+___
+## Seventh Demo
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/7
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/7/
+
+What's on it:
+* Vertical motion (looking up and down, flying and crouching).
+
+![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo7.png?raw=true "Demo Preview 7")
