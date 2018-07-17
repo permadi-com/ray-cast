@@ -66,3 +66,13 @@ What's on it:
 * Shading tricks.
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo5.png?raw=true "Demo Preview 5")
+
+___
+## Sixth Demo
+Source: https://github.com/permadi-com/ray-cast/tree/master/demo/6
+<br>See it in action: https://permadi.com/tutorial/raycast/demo/6/
+
+What's on it:
+* Ceiling casting.
+
+![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo6.png?raw=true "Demo Preview 6")
