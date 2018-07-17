@@ -8,6 +8,7 @@ Read through the tutorial to learn the concept behind ray casting, then check ou
 * Javascript Canvas API: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API
 * Javascript Animation Interval (Animation Frame): https://developer.mozilla.org/en-US/docs/Games/Anatomy
 * Bresenham Line Drawing Algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+* https://permadi.com/1996/05/ray-casting-tutorial-bibliography/
 
 ## First Demo
 Source: https://github.com/permadi-com/ray-cast/tree/master/demo/1
@@ -87,3 +88,5 @@ What's on it:
 * Vertical motion (looking up and down, flying and crouching).
 
 ![Alt text](https://github.com/permadi-com/ray-cast/blob/master/demo7.png?raw=true "Demo Preview 7")
+
+
